@@ -1,0 +1,17 @@
+name: TerrAcidCFs2
+channels:
+    - conda-forge
+    # - defaults
+dependencies:
+    - python
+    - geopandas
+    - gdal
+    - pandas
+    - openpyxl
+    - xlsxwriter
+    - tabulate
+    - pip
+    - pip:
+        - version-parser
+# shapely
+# rtree
