@@ -243,8 +243,8 @@ def create_stmat(tbl_stm_row, manual_save_override=False):
 
             if cfg.bln_debug2:
                 tempshp.to_file(fr'C:\temp\stm\tempshp_noproj_{i}.gpkg', driver='GPKG')
-                tempshp.to_file(fr'C:\temp\stm\shp\tempshp_noproj_{i}.shp',
-                                driver='ESRI Shapefile')
+                # tempshp.to_file(fr'C:\temp\stm\shp\tempshp_noproj_{i}.shp',
+                #                 driver='ESRI Shapefile')
             # project it
             tempshp = project_shapefile(shp=tempshp, projection_type=cfg.proj_crs_default, projection_string=cfg.proj_s_default)
 
@@ -282,7 +282,7 @@ def create_stmat(tbl_stm_row, manual_save_override=False):
         if cfg.bln_debug:
             print(f'\t---\n\tGoing to run multiintersect with {list_geofiles}')
         # TODO: if shapefiles are the same... avoid intersect?
-        shp_intersected = multiintersect(list_shapes=shps, how='intersect',  # was union
+        shp_intersected = multiintersect(list_shapes=shps, how='union',  # was union  # 5 mins with 'intersection'
                                          new_area_col=s_isect_area,
                                          new_area_conversion=cfg.proj_conv_default)
 
