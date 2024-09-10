@@ -303,6 +303,8 @@ def read_column_from_file(path, file, extension, col, sheet='',
                     os.makedirs(cfg.dir_input_pkls, exist_ok=True)
                     read_or_save_pickle('save', cfg.dir_input_pkls + os.sep + thisFileUniqueID + '.pkl',
                                         list_save_vars=shp)
+                    # and geopackage for later use
+                    shp.to_file(cfg.dir_input_pkls + os.sep + thisFileUniqueID + '.gpkg', driver='GPKG')
 
         if col in shp.columns:
             # we're extracting from a geodataframe, so we get the series

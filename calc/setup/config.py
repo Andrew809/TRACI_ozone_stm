@@ -45,7 +45,7 @@ suffix_time = ''  # this will be set by datetime upon execution
 
 # debugging levels
 bln_debug = True
-bln_debug2 = True
+bln_debug2 = False
 
 
 # region File locations ----------------

@@ -287,23 +287,23 @@ def create_stmat(tbl_stm_row, manual_save_override=False):
             print(f'\t---\n\tGoing to run multiintersect with {list_geofiles}')
         t_multiinter = time.time()
         # TODO: if shapefiles are the same... avoid intersect?
-        shp_intersected = multiintersect(list_shapes=shps, how='union',  # was union  # 5 mins with 'intersection'
+        shp_intersected = multiintersect(list_shapes=shps, how='intersect',  # union or 'intersection'....  Intersection appears faster.
                                          new_area_col=s_isect_area,
                                          new_area_conversion=cfg.proj_conv_default)
 
-        print(f'\t\... done. time ={nice_time(time.time() - t_multiinter)}')
+        print(f'\t\t... multiintersect done. Total time= {nice_time(time.time() - t_multiinter)}')
 
         # possibly save
         if cfg.bln_save_intersects:
-            # print(f'\t\t\t... saving intersect <{temp_isect_name}> as gpkg ...')
-            # shp_intersected.to_file(make_filepathext(file= temp_isect_name, path = cfg.dir_intersects, ext= '.gpkg'),
-            #                         driver='GPKG')
-            print(f'Now saving intersect <{temp_isect_name}> pickle...')
+            print(f'\t\t\t... saving intersect <{temp_isect_name}> as gpkg ...')
+            shp_intersected.to_file(make_filepathext(file= temp_isect_name, path = cfg.dir_intersects, ext= '.gpkg'),
+                                    driver='GPKG')
+            print(f'\t\t\t... saving intersect <{temp_isect_name}> pickle...')
             t_save = time.time()
             read_or_save_pickle(action='save',
                                 file=make_filepathext(file= temp_isect_name, path = cfg.dir_intersects, ext= '.pkl'),
                                 list_save_vars=shp_intersected)
-            print(f'\t\t\t\t... done. Time ={nice_time(time.time() - t_save)}')
+            print(f'\t\t\t\t... done saving. Time= {nice_time(time.time() - t_save)}')
 
     # join the weight values
     if bln_have_weight:

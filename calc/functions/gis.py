@@ -474,7 +474,7 @@ def get_projection(projnameID):
 def drop_duplicate_cols(df1, df2):
     # drop from df2
 
-    print(f'\t\t\tChecking for duplicates in dataframes\n')
+    print(f'\t\t\tChecking for duplicates in dataframes')
     # print(f'\t\t\tdf1.columns=\n'
     #       f'\t\t\t\t{df1.columns}\n'
     #       f'\t\t\tdf2.columns=\n'
@@ -537,7 +537,7 @@ def multiintersect(list_shapes, how, new_area_col, new_area_conversion):
                           drop_duplicate_cols(list_shapes[0], list_shapes[1]),
                           how=how)
     print('\t\t...done with shapes 1 and 2')
-    print(f'\t\t...end time = {datetime.now().strftime("%H:%M")}; total time ={nice_time(time.time() - t_start_int_tot)}')
+    print(f'\t\t...end time = {datetime.now().strftime("%H:%M")}; total time= {nice_time(time.time() - t_start_int_tot)}')
 
     tempshp.to_file(r'C:\temp\tempshp12.gpkg', driver='GPKG')
 
