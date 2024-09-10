@@ -1,6 +1,7 @@
 # https://docs.python.org/3/faq/programming.html#how-do-i-share-global-variables-across-modules
 # https://stackoverflow.com/questions/13034496/using-global-variables-between-files
 
+import os
 
 # region User Settings
 
@@ -71,6 +72,13 @@ bln_save_intersects = True  #big time-saver, as the multi-intersects can take a 
 
 dir_input_pkls = dir_storage + r'\PickledInputs'
 bln_save_geopickles = True  #this speeds up reading the shapefiles a bit...
+
+os.makedirs(dir_stms, exist_ok=True)
+os.makedirs(dir_shapefiles, exist_ok=True)
+os.makedirs(dir_intersects, exist_ok=True)
+os.makedirs(dir_input_pkls, exist_ok=True)
+
+
 
 str_fileText_Orig = 'Orig'
 str_fileText_New = 'New'

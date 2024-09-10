@@ -14,6 +14,9 @@ from datetime import datetime
 
 import os
 import calc.setup.config as cfg
+
+import time
+from calc.functions.timing import nice_time
 from calc.inout.read_data import getput_idsnames_fromfiles, read_column_from_file, get_data
 
 from calc.functions.gis import read_shapefile_fromfile, project_shapefile
@@ -242,6 +245,7 @@ def create_stmat(tbl_stm_row, manual_save_override=False):
                 pass
 
             if cfg.bln_debug2:
+                os.makedirs(r'C:\temp\stm', exist_ok=True)
                 tempshp.to_file(fr'C:\temp\stm\tempshp_noproj_{i}.gpkg', driver='GPKG')
                 # tempshp.to_file(fr'C:\temp\stm\shp\tempshp_noproj_{i}.shp',
                 #                 driver='ESRI Shapefile')
@@ -281,23 +285,25 @@ def create_stmat(tbl_stm_row, manual_save_override=False):
         # run the intersection of the geo... #union to keep all areas
         if cfg.bln_debug:
             print(f'\t---\n\tGoing to run multiintersect with {list_geofiles}')
+        t_multiinter = time.time()
         # TODO: if shapefiles are the same... avoid intersect?
         shp_intersected = multiintersect(list_shapes=shps, how='union',  # was union  # 5 mins with 'intersection'
                                          new_area_col=s_isect_area,
                                          new_area_conversion=cfg.proj_conv_default)
 
-        # done with multi-intersect...
+        print(f'\t\... done. time ={nice_time(time.time() - t_multiinter)}')
 
         # possibly save
         if cfg.bln_save_intersects:
             # print(f'\t\t\t... saving intersect <{temp_isect_name}> as gpkg ...')
             # shp_intersected.to_file(make_filepathext(file= temp_isect_name, path = cfg.dir_intersects, ext= '.gpkg'),
             #                         driver='GPKG')
-            print(f'\t\t\t\t... done. Now saving intersect <{temp_isect_name}> pickle...')
+            print(f'Now saving intersect <{temp_isect_name}> pickle...')
+            t_save = time.time()
             read_or_save_pickle(action='save',
                                 file=make_filepathext(file= temp_isect_name, path = cfg.dir_intersects, ext= '.pkl'),
                                 list_save_vars=shp_intersected)
-            print(f'\t\t\t\t... done.')
+            print(f'\t\t\t\t... done. Time ={nice_time(time.time() - t_save)}')
 
     # join the weight values
     if bln_have_weight:

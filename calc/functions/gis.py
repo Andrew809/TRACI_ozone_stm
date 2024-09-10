@@ -26,7 +26,9 @@
 
 import os
 from datetime import datetime
+import time
 
+from calc.functions.timing import nice_time
 from calc.setup import config as cfg
 from calc.inout.files import get_filepathext_from_files, get_filetablecol, read_or_save_pickle
 from calc.inout.read_data import get_data
@@ -379,11 +381,24 @@ def project_shapefile(shp, projection_type='', projection_string=''):
     # get current type
     curSpatialRef = osr.SpatialReference()
 
-    if shp.crs is None:
+    if shp.crs is None or "Undefined" in shp.crs.name:
+
+        # can sometimes have something undefined:
+            # <Engineering CRS: LOCAL_CS["Undefined SRS",LOCAL_DATUM["unknown",327 ...>
+            # Name: Undefined SRS
+            # Axis Info [cartesian]:
+            # - [east]: Easting (unknown)
+            # - [north]: Northing (unknown)
+            # Area of Use:
+            # - undefined
+            # Datum: unknown
+            # - Ellipsoid: undefined
+            # - Prime Meridian: undefined
+
         # Need to set a crs in order to be able to reproject
         # assume geometric projection
         # WGS 1984 is common; https://spatialreference.org/ref/epsg/wgs-84/
-        shp = shp.set_crs(epsg=4326) #, allow_override=True)
+        shp = shp.set_crs(epsg=4326, allow_override=True)  # allow override b/c
 
 
     if Version(gpd.__version__) < Version('v0.7.0'):
@@ -459,10 +474,11 @@ def get_projection(projnameID):
 def drop_duplicate_cols(df1, df2):
     # drop from df2
 
-    print(f'\t\tChecking for duplicates in dataframes\n\t\tdf1.columns=\n'
-          f'\t\t\t{df1.columns}\n'
-          f'\t\tdf2.columns=\n'
-          f'\t\t\t{df2.columns}')
+    print(f'\t\t\tChecking for duplicates in dataframes\n')
+    # print(f'\t\t\tdf1.columns=\n'
+    #       f'\t\t\t\t{df1.columns}\n'
+    #       f'\t\t\tdf2.columns=\n'
+    #       f'\t\t\t\t{df2.columns}')
 
     set_duplicates = set(df1.columns).intersection(df2.columns)
 
@@ -503,6 +519,9 @@ def multiintersect(list_shapes, how, new_area_col, new_area_conversion):
         raise TypeError(f'Function <multiintersect> was called with fewer than 2 or '
                         f'more than 4 shapes.')
 
+    t_start_int_tot = time.time()
+    t_start_int_i = time.time()
+
     print(f'\n-----------\n'
           f'\tFunction <multiintersect> intersecting shapes '
           f'1 ({list_shapes[0].shape[0]} rows) and 2 ({list_shapes[1].shape[0]} rows)...')
@@ -512,15 +531,13 @@ def multiintersect(list_shapes, how, new_area_col, new_area_conversion):
     # list_shapes[1].to_file(r'C:\temp\shape2.gpkg', driver='GPKG')
     # list_shapes[2].to_file(r'C:\temp\shape3.gpkg', driver='GPKG')
 
-
-
     # Note that the two input shapes should have already had precision adjusted by
     #   round_geometry_wkt
     tempshp = gpd.overlay(list_shapes[0],
                           drop_duplicate_cols(list_shapes[0], list_shapes[1]),
                           how=how)
     print('\t\t...done with shapes 1 and 2')
-    print(f'\t\t...end time = {datetime.now().strftime("%H:%M")}')
+    print(f'\t\t...end time = {datetime.now().strftime("%H:%M")}; total time ={nice_time(time.time() - t_start_int_tot)}')
 
     tempshp.to_file(r'C:\temp\tempshp12.gpkg', driver='GPKG')
 
