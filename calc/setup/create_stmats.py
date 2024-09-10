@@ -287,7 +287,8 @@ def create_stmat(tbl_stm_row, manual_save_override=False):
             print(f'\t---\n\tGoing to run multiintersect with {list_geofiles}')
         t_multiinter = time.time()
         # TODO: if shapefiles are the same... avoid intersect?
-        shp_intersected = multiintersect(list_shapes=shps, how='intersect',  # union or 'intersection'....  Intersection appears faster.
+        # union or 'intersection'....  Intersection appears faster.
+        shp_intersected = multiintersect(list_shapes=shps, how='intersection',
                                          new_area_col=s_isect_area,
                                          new_area_conversion=cfg.proj_conv_default)
 
