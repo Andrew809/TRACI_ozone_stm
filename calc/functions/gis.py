@@ -25,6 +25,7 @@
 #   project everything, and round everything.
 
 import os
+from datetime import datetime
 
 from calc.setup import config as cfg
 from calc.inout.files import get_filepathext_from_files, get_filetablecol, read_or_save_pickle
@@ -505,21 +506,27 @@ def multiintersect(list_shapes, how, new_area_col, new_area_conversion):
     print(f'\n-----------\n'
           f'\tFunction <multiintersect> intersecting shapes '
           f'1 ({list_shapes[0].shape[0]} rows) and 2 ({list_shapes[1].shape[0]} rows)...')
+    print(f'\tStart time = {datetime.now().strftime("%H:%M")}')
 
-    # list_shapes[0].to_file(r'C:\temp\shape1.shp', driver='ESRI Shapefile')
-    # list_shapes[1].to_file(r'C:\temp\shape2.shp', driver='ESRI Shapefile')
-    # list_shapes[2].to_file(r'C:\temp\shape3.shp', driver='ESRI Shapefile')
+    # list_shapes[0].to_file(r'C:\temp\shape1.gpkg', driver='GPKG')
+    # list_shapes[1].to_file(r'C:\temp\shape2.gpkg', driver='GPKG')
+    # list_shapes[2].to_file(r'C:\temp\shape3.gpkg', driver='GPKG')
+
+
 
     # Note that the two input shapes should have already had precision adjusted by
     #   round_geometry_wkt
     tempshp = gpd.overlay(list_shapes[0],
-                          drop_duplicate_cols(list_shapes[0], list_shapes[1]), how=how)
+                          drop_duplicate_cols(list_shapes[0], list_shapes[1]),
+                          how=how)
     print('\t\t...done with shapes 1 and 2')
+    print(f'\t\t...end time = {datetime.now().strftime("%H:%M")}')
 
-    # tempshp.to_file(r'C:\temp\tempshp12.shp', driver='ESRI Shapefile')
+    tempshp.to_file(r'C:\temp\tempshp12.gpkg', driver='GPKG')
 
     if len(list_shapes) > 2:
         print(f'\n\t\t... adding shape 3, with {list_shapes[2].shape[0]} rows ...')
+        print(f'\t\tStart time = {datetime.now().strftime("%H:%M")}')
 
         print(f'\t\t... first, rounding intersect(1,2) geometry coordinates')
         # see round_geometry_wkt for discussion of why we do this
@@ -543,6 +550,7 @@ def multiintersect(list_shapes, how, new_area_col, new_area_conversion):
         tempshp = gpd.overlay(tempshp,
                               drop_duplicate_cols(tempshp, list_shapes[2]), how=how)
         print('\t\t...done with shape 3')
+        print(f'\t\t...end time = {datetime.now().strftime("%H:%M")}')
 
     if len(list_shapes) == 4:
         print(f'\n\t\tadding shape 4, with with {list_shapes[3].shape[0]} rows ...')

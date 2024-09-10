@@ -8,6 +8,10 @@
 
 # calculation depends on whether properties being 'translated' are intensive or extensive
 
+# import geofileops as gfo
+
+from datetime import datetime
+
 import os
 import calc.setup.config as cfg
 from calc.inout.read_data import getput_idsnames_fromfiles, read_column_from_file, get_data
@@ -225,7 +229,8 @@ def create_stmat(tbl_stm_row, manual_save_override=False):
 
         for i in range(0, len(list_ids_rename)):
             # get file
-            if cfg.bln_debug2: print(f'\t\tFunction <create_stmat> is reading geofiles for intersection')
+            if cfg.bln_debug2:
+                print(f'\t\tFunction <create_stmat> is reading geofiles for intersection')
 
             tempshp = read_shapefile_fromfile(geofilenameID=list_geofiles[i], new_id_col=list_ids_rename[i] )
 
@@ -236,21 +241,48 @@ def create_stmat(tbl_stm_row, manual_save_override=False):
                 # if we cannot convert to int, we get a value error
                 pass
 
+            if cfg.bln_debug2:
+                tempshp.to_file(fr'C:\temp\stm\tempshp_noproj_{i}.gpkg', driver='GPKG')
+                tempshp.to_file(fr'C:\temp\stm\shp\tempshp_noproj_{i}.shp',
+                                driver='ESRI Shapefile')
             # project it
             tempshp = project_shapefile(shp=tempshp, projection_type=cfg.proj_crs_default, projection_string=cfg.proj_s_default)
 
             if cfg.bln_debug: print(f'\t\tFunction <create_stmat> is buffering')
             # tempshp['geometry'] = tempshp.buffer(eps)  # .buffer(-eps)
             if cfg.bln_debug: print(f'\t\t\t... done.')
+
             # calc area
             calc_area(shp=tempshp, new_area_name=list_areas_rename[i], conversion_factor=cfg.proj_conv_default)
-            if cfg.bln_debug: import matplotlib.pyplot as plt; tempshp.plot(); plt.show()
+
+            if cfg.bln_debug2:
+                tempshp.to_file(fr'C:\temp\stm\tempshp_projarea_{i}.gpkg', driver='GPKG')
+
+            # if cfg.bln_debug:
+            #     import matplotlib.pyplot as plt
+            #     tempshp.plot()
+            #     plt.show()
+
             shps.append(tempshp)
 
+
+        # what does geofileops do?
+        # https://geofileops.readthedocs.io/en/stable/user_guide.html
+
+        # gfo.intersection(input1_path=fr'C:\temp\stm\tempshp_projarea_0.gpkg',
+        #               input2_path=fr'C:\temp\stm\tempshp_projarea_1.gpkg',
+        #               output_path=fr'C:\temp\stm\tempshp_projarea_0-1.gpkg')
+        #
+        # gfo.intersection(input1_path=fr'C:\temp\stm\tempshp_projarea_0-1.gpkg',
+        #               input2_path=fr'C:\temp\stm\tempshp_projarea_2.gpkg',
+        #               output_path=fr'C:\temp\stm\tempshp_projarea_0-1-2.gpkg')
+
+
         # run the intersection of the geo... #union to keep all areas
-        if cfg.bln_debug: print(f'\t---\n\tGoing to run multiintersect with {list_geofiles}')
+        if cfg.bln_debug:
+            print(f'\t---\n\tGoing to run multiintersect with {list_geofiles}')
         # TODO: if shapefiles are the same... avoid intersect?
-        shp_intersected = multiintersect(list_shapes=shps, how='union',
+        shp_intersected = multiintersect(list_shapes=shps, how='intersect',  # was union
                                          new_area_col=s_isect_area,
                                          new_area_conversion=cfg.proj_conv_default)
 
