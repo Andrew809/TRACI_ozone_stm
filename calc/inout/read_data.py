@@ -282,19 +282,22 @@ def read_column_from_file(path, file, extension, col, sheet='',
 
                 #kludgily deal with data that doesn't have an ID stored as a column...
 
-                if realIDcolumn not in shp.columns:
-                    # happens with a file created from a raster; the geopackage ID may not be in columns.
-                    # the first time we read, we want to force this column to be included in the columns, not just as an index
-
-                    shp = shp.reset_index()
-                    shp = shp.rename(columns={'index': realIDcolumn})
-
-
                 if colID != '':
                     if colID not in shp.columns:
                         shp = shp.reset_index()
                         shp = shp.rename(columns={'index': colID})
 
+                else:
+                    if realIDcolumn !='' and  realIDcolumn not in shp.columns:
+                        # happens with a file created from a raster; the geopackage ID may not be in columns.
+                        # the first time we read, we want to force this column to be included in the columns, not just as an index
+                        shp = shp.reset_index()
+                        shp = shp.rename(columns={'index': realIDcolumn})
+
+                        # and the geopackage fids start at 1, so do the same here.
+                        if realIDcolumn == 'fid':
+                            shp[realIDcolumn] = shp[realIDcolumn].astype(int)
+                            shp[realIDcolumn] = shp[realIDcolumn]+1
 
                 # we may save them, either in the run-time dictionary of what we've read, and/or as a pickle of the shapefile
                 if cfg.bln_keep_filesHaveBeenRead:
