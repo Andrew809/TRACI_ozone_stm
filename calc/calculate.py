@@ -18,8 +18,8 @@ cfg.suffix_time = datetime.now().strftime("%Y-%m-%d_%H-%M")
 
 # where are the files: both input and output
 # NOTE: also check file locations in config.py
-file_settings = r'ozone STM calc setup v00a.xlsx'
-file_output = r'ozone STM calc setup v00a'  # will be written as excel file
+file_settings = r'ozone STM calc setup v00b.xlsx'
+file_output = r'ozone STM calc setup v00b'  # will be written as excel file
 
 # Note: which scales to use for impacts (regional, global, or both) are set in excel
 

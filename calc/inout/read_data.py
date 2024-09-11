@@ -588,7 +588,7 @@ def getput_idsnames_fromfiles(filenameID, table, return_dict=False):
                                            col=col_id,
                                            fix_IDs=False,
                                            return_array=False,
-                                           realIDcolumn= col_id)
+                                           realIDcolumn=col_id)
 
         # series_ids = read_column_from_file(path=path, file=filename, extension=ext,
         #                                    col=col_id, colID=col_id,
